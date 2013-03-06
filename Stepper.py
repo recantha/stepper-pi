@@ -30,15 +30,48 @@ class Motor:
         # Make sure there is a 1:1 mapping between angle and stepper angle
         target_step_angle = 8 * (int(angle / self.deg_per_step) / 8)
         steps = target_step_angle - self.step_angle
-        steps = (steps % self.steps_per_rev)
+        steps = int(steps % self.steps_per_rev)
         if steps > self.steps_per_rev / 2:
-            steps -= self.steps_per_rev
-            print "moving " + `steps` + " steps"
+            steps -= int(self.steps_per_rev)
+            print("moving " + str(steps) + " steps")
             self._move_acw(-steps / 8)
         else:
-            print "moving " + `steps` + " steps"
+            print("moving " + str(steps) + " steps")
             self._move_cw(steps / 8)
         self.step_angle = target_step_angle
+
+    def move_acw(self, angle):
+        target_step_angle = (int(angle / self.deg_per_step) / 8)
+        steps = target_step_angle
+        steps = int(steps % self.steps_per_rev)
+        self._move_acw(steps)
+        self.step_angle = self.step_angle - angle
+ 
+    def _move_cw(self, big_steps):
+        GPIO.output(self.P1, 0)
+        GPIO.output(self.P2, 0)
+        GPIO.output(self.P3, 0)
+        GPIO.output(self.P4, 0)
+
+        big_steps = int(big_steps)
+
+        for i in range(big_steps):
+            GPIO.output(self.P4, 1)
+            sleep(self._T)
+            GPIO.output(self.P2, 0)
+            sleep(self._T)
+            GPIO.output(self.P3, 1)
+            sleep(self._T)
+            GPIO.output(self.P1, 0)
+            sleep(self._T)
+            GPIO.output(self.P2, 1)
+            sleep(self._T)
+            GPIO.output(self.P4, 0)
+            sleep(self._T)
+            GPIO.output(self.P1, 1)
+            sleep(self._T)
+            GPIO.output(self.P3, 0)
+            sleep(self._T)
  
     def _move_acw(self, big_steps):
         GPIO.output(self.P1, 0)
@@ -46,29 +79,7 @@ class Motor:
         GPIO.output(self.P3, 0)
         GPIO.output(self.P4, 0)
 
-	for i in range(big_steps):
-		GPIO.output(self.P4, 1)
-		sleep(self._T)
-		GPIO.output(self.P2, 0)
-		sleep(self._T)
-		GPIO.output(self.P3, 1)
-		sleep(self._T)
-		GPIO.output(self.P1, 0)
-		sleep(self._T)
-		GPIO.output(self.P2, 1)
-		sleep(self._T)
-		GPIO.output(self.P4, 0)
-		sleep(self._T)
-		GPIO.output(self.P1, 1)
-		sleep(self._T)
-		GPIO.output(self.P3, 0)
-		sleep(self._T)
- 
-    def _move_cw(self, big_steps):
-        GPIO.output(self.P1, 0)
-        GPIO.output(self.P2, 0)
-        GPIO.output(self.P3, 0)
-        GPIO.output(self.P4, 0)
+        big_steps = int(big_steps)
 
         for i in range(big_steps):
             GPIO.output(self.P3, 0)

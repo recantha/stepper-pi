@@ -5,8 +5,10 @@ from time import sleep
 import RPi.GPIO as GPIO
 import sys
 
+
 if __name__ == "__main__":
 	GPIO.setmode(GPIO.BOARD)
+
 	m = Motor([int(sys.argv[1]),int(sys.argv[2]),int(sys.argv[3]),int(sys.argv[4])], 15)
 
 	# clock 180
